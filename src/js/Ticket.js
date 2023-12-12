@@ -21,25 +21,24 @@ export default class Ticket {
     <div class="list-item-created"></div>
     <button type="button" class="list-item-btn list-item-btn-edit"></button>
     <button type="button" class="list-item-btn list-item-btn-remove"></button>`;
-    this.statusEl = this.element.querySelector('.list-item-status');
+    this.statusEl = this.element.querySelector(".list-item-status");
     this.statusEl.checked = this.status;
     this.onChangeStatus = this.onChangeStatus.bind(this);
-    this.statusEl.addEventListener('change', this.onChangeStatus);
+    this.statusEl.addEventListener("change", this.onChangeStatus);
 
-    this.labelStatusEl = this.element.querySelector('.list-item-status-label');
-    if (this.status) {
-      this.labelStatusEl.classList.add('list-item-status-true');
-    }
-    this.nameWrapperEl = this.element.querySelector('.list-item-name-wrapper');
-    this.nameEl = this.element.querySelector('.list-item-name');
+    // this.labelStatusEl = this.element.querySelector('.list-item-status-label');
+    this.nameWrapperEl = this.element.querySelector(".list-item-name-wrapper");
+    this.nameEl = this.element.querySelector(".list-item-name");
     this.nameEl.textContent = this.name;
     this.onClickName = this.onClickName.bind(this);
-    this.nameWrapperEl.addEventListener('click', this.onClickName);
+    this.nameWrapperEl.addEventListener("click", this.onClickName);
 
-    this.createdEl = this.element.querySelector('.list-item-created');
-    this.createdEl.textContent = new Date(this.created).toLocaleString().slice(0, -3);
-    this.btnEditEl = this.element.querySelector('.list-item-btn-edit');
-    this.btnRemoveEl = this.element.querySelector('.list-item-btn-remove');
+    this.createdEl = this.element.querySelector(".list-item-created");
+    this.createdEl.textContent = new Date(this.created)
+      .toLocaleString()
+      .slice(0, -3);
+    this.btnEditEl = this.element.querySelector(".list-item-btn-edit");
+    this.btnRemoveEl = this.element.querySelector(".list-item-btn-remove");
 
     this.onClickButtonEdit = this.onClickButtonEdit.bind(this);
     this.btnEditEl.addEventListener("click", this.onClickButtonEdit);
@@ -64,12 +63,17 @@ export default class Ticket {
     if (this.status) {
       this.status = false;
       this.statusEl.checked = false;
-      this.labelStatusEl.classList.remove('list-item-status-true');
     } else {
       this.status = true;
       this.statusEl.checked = true;
-      this.labelStatusEl.classList.add('list-item-status-true');
     }
+    this.changeStatusHandler({
+      id: this.id,
+      name: this.name,
+      status: this.status,
+      description: this.description,
+      created: this.created,
+    });
   }
 
   onClickName() {
@@ -92,14 +96,16 @@ export default class Ticket {
     if (!this.fullDescription) {
       return;
     }
-    const descriptionEl = document.createElement('div');
-    descriptionEl.classList.add('list-item-description');
+    const descriptionEl = document.createElement("div");
+    descriptionEl.classList.add("list-item-description");
     descriptionEl.textContent = this.fullDescription;
     this.nameWrapperEl.appendChild(descriptionEl);
   }
 
   hideDescription() {
-    const descriptionEl = this.nameWrapperEl.querySelector('.list-item-description');
+    const descriptionEl = this.nameWrapperEl.querySelector(
+      ".list-item-description"
+    );
     if (descriptionEl) descriptionEl.remove();
   }
 
@@ -119,7 +125,6 @@ export default class Ticket {
   get description() {
     return this._description;
   }
-
 
   set created(value) {
     this._created = value;

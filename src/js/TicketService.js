@@ -1,73 +1,54 @@
-import Ticket from './Ticket';
+import createRequest from "./createRequest";
+const HOST = "http://localhost:3000/";
 
 export default class TicketService {
-
   static getAllTickets(callback) {
-    const xhr = new XMLHttpRequest;
-    xhr.addEventListener('load', () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          const arrayTickets = TicketService.createArrayTickets(data);
-          callback(arrayTickets);
-        } catch (e) {
-          console.error(e);
-        }
-      }
+    createRequest({
+      requestMethod: "GET",
+      urlMethod: "allTickets",
+      host: HOST,
+      callback,
     });
-
-    xhr.open('GET', 'http://localhost:3000/?method=allTickets');
-
-    xhr.send();
   }
 
   static getDescription(id, callback) {
-    const xhr = new XMLHttpRequest;
-    xhr.addEventListener('load', () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          callback(data.description);
-        } catch (e) {
-          console.error(e);
-        }
-      }
+    createRequest({
+      requestMethod: "GET",
+      urlMethod: "ticketById",
+      host: HOST,
+      callback,
+      id,
     });
-
-    xhr.open('GET', `http://localhost:3000/?method=ticketById&id=${id}`);
-
-    xhr.send();
   }
 
-  static updateTicket(ticket, form, callback) {
-    console.log('ticket ', ticket, form);
-    const xhr = new XMLHttpRequest;
-    xhr.addEventListener('load', () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          const arrayTickets = TicketService.createArrayTickets(data);
-          callback(arrayTickets);
-        } catch (e) {
-          console.error(e);
-        }
-      }
+  static updateTicket(ticket, callback) {
+    createRequest({
+      requestMethod: "POST",
+      urlMethod: "updateById",
+      host: HOST,
+      callback: callback,
+      id: ticket.id,
+      body: ticket,
     });
-    const body = new FormData(form);
-    // Object.keys(ticket).forEach(key => {
-    //   body.set(key, ticket[key]);
-    // });
-
-    xhr.open('POST', `http://localhost:3000/?method=updateById&id=${ticket.id}`);
-
-    xhr.setRequestHeader('Content-Type', 'multipart/form-data');
-
-    xhr.send(body);
   }
 
-  static createArrayTickets(data) {
-    return data.map(el => {
-      return new Ticket(el);
+  static createTicket(ticket, callback) {
+    createRequest({
+      requestMethod: "POST",
+      urlMethod: "createTicket",
+      host: HOST,
+      callback,
+      body: ticket,
+    });
+  }
+
+  static removeTicket(ticketId, callback) {
+    createRequest({
+      requestMethod: "GET",
+      urlMethod: "deleteById",
+      host: HOST,
+      callback,
+      id: ticketId,
     });
   }
 }

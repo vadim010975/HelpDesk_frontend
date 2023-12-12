@@ -11,5 +11,3 @@ const confirm = new Confirm();
 const ticketList = new TicketList(container, popup, confirm);
 
 ticketList.init();
-
-

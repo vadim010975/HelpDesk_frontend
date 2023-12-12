@@ -1,4 +1,4 @@
-import TicketService from "./TicketService"
+import TicketService from "./TicketService";
 
 export default class TicketList {
   constructor(listEl, popup, confirm) {
@@ -6,12 +6,12 @@ export default class TicketList {
     this.popup = popup;
     this.confirm = confirm;
     this.removeTicket = this.removeTicket.bind(this);
-    this.containerEl = this.listEl.querySelector('.list-items');
-    this.btnAddEl = this.listEl.querySelector('.list-btn-add');
+    this.containerEl = this.listEl.querySelector(".list-items");
+    this.btnAddEl = this.listEl.querySelector(".list-btn-add");
     this.onClickAdd = this.onClickAdd.bind(this);
-    this.btnAddEl.addEventListener('click', this.onClickAdd);
-    this.addTicket = this.addTicket.bind(this);
-    this.popup.onSubmitHandler = this.addTicket;
+    this.btnAddEl.addEventListener("click", this.onClickAdd);
+    this.updateTicket = this.updateTicket.bind(this);
+    this.popup.onSubmitHandler = this.updateTicket;
     this.editTicket = this.editTicket.bind(this);
   }
 
@@ -21,16 +21,17 @@ export default class TicketList {
   }
 
   init() {
-    TicketService.getAllTickets((tickets => {
+    TicketService.getAllTickets((tickets) => {
       this.tickets = tickets;
       this.tickets.forEach((ticket) => this.initTicket(ticket));
       this.renderTickets();
-    }));
+    });
   }
 
   initTicket(ticket) {
     ticket.removeHandler = this.removeTicket;
     ticket.editHandler = this.editTicket;
+    ticket.changeStatusHandler = this.updateTicket;
   }
 
   renderTicket(ticket) {
@@ -50,28 +51,31 @@ export default class TicketList {
 
   removeTicket(ticket) {
     this.confirm.show(() => {
-      this.tickets = this.tickets.filter((element) => element !== ticket);
-      this.renderTickets();
+      TicketService.removeTicket(ticket.id, (res) => {
+        if (res) {
+          this.init();
+        }
+      });
     });
-    
   }
 
   editTicket(ticket) {
     this.popup.show(ticket);
   }
 
-  addTicket(ticket, form) {
-    // if (ticket.id) {
-      TicketService.updateTicket(ticket, form, (tickets) => {
+  updateTicket(ticket) {
+    if (ticket.id) {
+      TicketService.updateTicket(ticket, (tickets) => {
         this.tickets = tickets;
         this.tickets.forEach((ticket) => this.initTicket(ticket));
         this.renderTickets();
       });
-    // } else {
-    //   TicketService.createTicket(ticket, () => {});
-    // }
-    // this.initTicket(ticket);
-    // this.tickets.push(ticket);
-    // this.renderTickets();
+    } else {
+      TicketService.createTicket(ticket, (newTicket) => {
+        if (newTicket) {
+          this.init();
+        }
+      });
+    }
   }
 }
